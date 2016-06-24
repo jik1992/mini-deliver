@@ -17,20 +17,21 @@ io.on('connection', function(socket) {
   io.emit('console', "连接成功！");
 });
 
+var url=process.env.URL;
 //Parse
 var api = new ParseServer({
-  databaseURI: 'mongodb://10.46.69.96:27017/mongorocks', // Connection string for your MongoDB database
-  cloud: '/workspace/cloud/main.js', // Absolute path to your Cloud Code
+  databaseURI: 'mongodb://120.55.191.149:27017/mongorocks', // Connection string for your MongoDB database
+  cloud: './cloud/main.js', // Absolute path to your Cloud Code
   appId: 'deploy',
   masterKey: 'sercert', // Keep this key secret!
   fileKey: 'sercert',
-  serverURL: 'http://120.55.191.149:9002/parse' // Don't forget to change to https if needed
+  serverURL: url+'parse' // Don't forget to change to https if needed
 });
 
 app.use('/parse', api);
 
 
-var server = http.listen(3000, function() {
+var server = http.listen(process.env.PORT, function() {
   console.log('start at port:' + server.address().port);
 });
 
