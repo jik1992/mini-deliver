@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="http://cdn.bootcss.com/jquery/2.2.3/jquery.min.js"></script>
+    <script src="http://cdn.bootcss.com/socket.io/1.4.6/socket.io.js"></script>
+
+    <script src="//cdn.bootcss.com/vue/1.0.25/vue.min.js"></script>
+</head>
+
+<body id='app'>
+    <h1>{{message}}</h1>
+    <script type="text/javascript" src="public/js/main.js"></script>
+    <script type="text/javascript" src="public/js/parse.js"></script>
+
+    <form id='login'>
+        <input type="text" name="username" v-model="u" />
+        <input type="text" name="password" v-model="p" />
+
+        <input type="button" value="login" v-on:click='login(u,p)' />
+        <input type="button" value="signup" v-on:click='signup(u,p)' />
+    </form>
+
+
+    <hr/>
+    <h1>拉取代码</h1>
+
+    <button id='action1' v-on:click='log'>log</button>
+    <button id='action2' v-on:click='free'>free</button>
+
+    <hr/>
+    <ul id="messages"></ul>
+
+
+
+
+    <script type="text/javascript">
+        Vue.config.debug = true;
+
+        var vue = new Vue({
+            el: '#app',
+            data: {
+                message: 'Init Deploy'
+            },
+            methods: {
+                login: function(u, p) {
+                    console.info(1111 + u + p);
+                },
+                signup: function() {
+                    console.info(2222);
+                },
+                log: function() {
+                    Parse.Cloud.run("log", {}, function(msg) {
+                        console.info(msg);
+                    })
+                },
+                free: function() {
+                    Parse.Cloud.run("free", {}, function(msg) {
+                        console.info(msg);
+                    })
+                }
+            }
+
+        });
+
+        Parse.initialize("deploy");
+        Parse.serverURL = 'http://120.55.191.149:9002/parse'
+
+        Parse.Cloud.run("hello", {}, function(msg) {
+            console.info(msg)
+        });
+
+
+        Parse.User.logIn("myname", "mypass", {
+            success: function(user) {
+                // Do stuff after successful login.
+                console.info("登陆成功");
+                console.info(user.get("username"));
+                var currentUser = Parse.User.current();
+                console.info(currentUser);
+
+                var query = new Parse.Query(Parse.User);
+                query.get(currentUser.id, {
+                    success: function(user) {
+                        console.info(user.get("username"));
+                    }
+                })
+
+            },
+            error: function(user, error) {
+                // The login failed. Check error to see why.
+                console.info("登陆失败");
+                console.info(error);
+            }
+        });
+
+
+        //ws
+        var socket = io();
+        socket.on('console', function(msg) {
+            $('#messages').append($('<li>').text(msg));
+        });
+
+
+        console.info(2);
+    </script>
+</body>
+
+</html>
